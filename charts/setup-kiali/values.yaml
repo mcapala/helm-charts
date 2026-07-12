@@ -196,3 +196,38 @@ monitoring:
       - action: replace
         replacement: "mesh_id"
         targetLabel: mesh_id
+
+ossmconsole:
+  # -- Deploy the OSSMConsole resource: the OpenShift Service Mesh Console plugin
+  # embedding Kiali mesh visibility into the OpenShift web console.
+  enabled: false
+  # -- Name of the OSSMConsole resource.
+  name: ossmconsole
+  # -- Namespace the console plugin is deployed to.
+  namespace: istio-system
+  # -- Syncwave: after the Kiali instance.
+  syncwave: '3'
+  # -- OSSMConsole version (default lets the operator pick the matching plugin version).
+  version: default
+  kiali:
+    # -- Name of the Kiali service the plugin connects to.
+    serviceName: kiali
+    # -- Namespace of the Kiali service.
+    serviceNamespace: istio-system
+    # -- Port of the Kiali service.
+    servicePort: 20001
+
+persesReader:
+  # -- Grant the Kiali ServiceAccount read access to PersesDashboard/PersesDatasource
+  # resources in the Perses project namespace. Required when Perses runs with
+  # kubernetesAuth (e.g. via the Cluster Observability Operator) so Kiali can
+  # resolve the dashboard links.
+  enabled: false
+  # -- Name of the Role and RoleBinding.
+  name: kiali-perses-reader
+  # -- Namespace holding the PersesDashboard resources (the Perses project).
+  namespace: ''
+  # -- Syncwave for the RBAC objects.
+  syncwave: '3'
+  # -- ServiceAccount the Kiali operator creates for the Kiali instance.
+  serviceAccount: kiali-service-account

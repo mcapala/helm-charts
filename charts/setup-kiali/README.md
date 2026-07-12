@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.8](https://img.shields.io/badge/Version-1.0.8-informational?style=flat-square)
+  ![Version: 1.0.9](https://img.shields.io/badge/Version-1.0.9-informational?style=flat-square)
 
  
 
@@ -116,6 +116,19 @@ Verify the subcharts for additional settings:
 | monitoring.serviceMonitor.port | string | `"http-monitoring"` | Metrics port name on the istiod service. |
 | monitoring.serviceMonitor.selector | object | `{"matchLabels":{"istio":"pilot"}}` | Label selector matching the istiod service. |
 | monitoring.syncwave | string | `"3"` | Syncwave for the monitors. |
+| ossmconsole.enabled | bool | `false` | Deploy the OSSMConsole resource: the OpenShift Service Mesh Console plugin embedding Kiali mesh visibility into the OpenShift web console. |
+| ossmconsole.kiali.serviceName | string | `"kiali"` | Name of the Kiali service the plugin connects to. |
+| ossmconsole.kiali.serviceNamespace | string | `"istio-system"` | Namespace of the Kiali service. |
+| ossmconsole.kiali.servicePort | int | `20001` | Port of the Kiali service. |
+| ossmconsole.name | string | `"ossmconsole"` | Name of the OSSMConsole resource. |
+| ossmconsole.namespace | string | `"istio-system"` | Namespace the console plugin is deployed to. |
+| ossmconsole.syncwave | string | `"3"` | Syncwave: after the Kiali instance. |
+| ossmconsole.version | string | `"default"` | OSSMConsole version (default lets the operator pick the matching plugin version). |
+| persesReader.enabled | bool | `false` | Grant the Kiali ServiceAccount read access to PersesDashboard/PersesDatasource resources in the Perses project namespace. Required when Perses runs with kubernetesAuth (e.g. via the Cluster Observability Operator) so Kiali can resolve the dashboard links. |
+| persesReader.name | string | `"kiali-perses-reader"` | Name of the Role and RoleBinding. |
+| persesReader.namespace | string | `""` | Namespace holding the PersesDashboard resources (the Perses project). |
+| persesReader.serviceAccount | string | `"kiali-service-account"` | ServiceAccount the Kiali operator creates for the Kiali instance. |
+| persesReader.syncwave | string | `"3"` | Syncwave for the RBAC objects. |
 
 ## Monitoring resources
 

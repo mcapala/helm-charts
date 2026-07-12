@@ -1,0 +1,21 @@
+{{- with .Values.ossmconsole }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: kiali.io/v1alpha1
+kind: OSSMConsole
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "3" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+spec:
+  version: {{ .version | default "default" }}
+  kiali:
+    serviceName: {{ .kiali.serviceName }}
+    serviceNamespace: {{ .kiali.serviceNamespace }}
+    servicePort: {{ .kiali.servicePort }}
+{{- end }}
+{{- end }}

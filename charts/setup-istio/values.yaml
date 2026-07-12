@@ -215,6 +215,10 @@ telemetry:
         - name: otel
       # -- Percentage of requests to sample for these providers.
       randomSamplingPercentage: 100
+  # -- Metrics configuration list (.spec.metrics). Each item lists the metrics providers to
+  # enable, e.g. prometheus for platform user-workload monitoring.
+  # @default -- []
+  metrics: []
   # -- Additional labels for the resource.
   # @default -- {}
   additionalLabels: {}

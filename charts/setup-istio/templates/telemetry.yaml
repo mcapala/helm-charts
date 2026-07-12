@@ -18,8 +18,9 @@ metadata:
     {{- include "tpl.additionalLabels" .additionalLabels | nindent 4 }}
     {{- end }}
 spec:
+  {{- with .tracing }}
   tracing:
-    {{- range .tracing }}
+    {{- range . }}
     - providers:
         {{- range .providers }}
         - name: {{ .name }}
@@ -31,5 +32,15 @@ spec:
       disableSpanReporting: {{ .disableSpanReporting }}
       {{- end }}
     {{- end }}
+  {{- end }}
+  {{- with .metrics }}
+  metrics:
+    {{- range . }}
+    - providers:
+        {{- range .providers }}
+        - name: {{ .name }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}

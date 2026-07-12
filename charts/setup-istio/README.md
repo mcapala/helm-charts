@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square)
+  ![Version: 1.0.3](https://img.shields.io/badge/Version-1.0.3-informational?style=flat-square)
 
  
 
@@ -133,6 +133,7 @@ Verify the subcharts for additional settings:
 | telemetry.additionalAnnotations | object | {} | Additional annotations for the resource. |
 | telemetry.additionalLabels | object | {} | Additional labels for the resource. |
 | telemetry.enabled | bool | `false` | Create a mesh-wide Telemetry resource enabling trace export. Requires a matching extensionProvider in the Istio meshConfig (istio.values.meshConfig.extensionProviders). |
+| telemetry.metrics | list | [] | Metrics configuration list (.spec.metrics). Each item lists the metrics providers to enable, e.g. prometheus for platform user-workload monitoring. |
 | telemetry.name | string | `"default"` | Name of the Telemetry resource. |
 | telemetry.namespace | string | `"istio-system"` | Namespace: control plane namespace makes the configuration mesh-wide. |
 | telemetry.syncwave | string | `"5"` | Syncwave: after the control plane. |

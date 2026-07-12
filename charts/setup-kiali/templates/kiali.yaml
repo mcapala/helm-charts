@@ -1,0 +1,67 @@
+{{- with .Values.kiali }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "3" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    {{- if .additionalAnnotations }}
+    {{- include "tpl.additionalAnnotations" .additionalAnnotations | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+    {{- if .additionalLabels }}
+    {{- include "tpl.additionalLabels" .additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .auth }}
+  auth:
+    strategy: {{ .auth.strategy }}
+  {{- end }}
+  deployment:
+    cluster_wide_access: {{ .deployment.cluster_wide_access }}
+    {{- if .deployment.view_only_mode }}
+    view_only_mode: {{ .deployment.view_only_mode }}
+    {{- end }}
+    {{- if .deployment.discovery_selectors }}
+    discovery_selectors:
+      default:
+        {{- toYaml .deployment.discovery_selectors | nindent 8 }}
+    {{- end }}
+  external_services:
+    istio:
+      {{- if .external_services.istio.gateway_api_classes }}
+      gateway_api_classes:
+        {{- toYaml .external_services.istio.gateway_api_classes | nindent 8 }}
+      {{- end }}
+    prometheus:
+      auth:
+        type: {{ .external_services.prometheus.auth.type }}
+        use_kiali_token: {{ .external_services.prometheus.auth.use_kiali_token }}
+      thanos_proxy:
+        enabled: {{ .external_services.prometheus.thanos_proxy.enabled }}
+      url: {{ .external_services.prometheus.url }}
+    {{- with .external_services.grafana }}
+    {{- if eq (.enabled | toString) "true" }}
+    grafana:
+      enabled: true
+      internal_url: {{ .internal_url }}
+      external_url: {{ .external_url }}
+    {{- end }}
+    {{- end }}
+    {{- with .external_services.tracing }}
+    {{- if eq (.enabled | toString) "true" }}
+    tracing:
+      enabled: true
+      provider: {{ .provider }}
+      internal_url: {{ .internal_url }}
+      external_url: {{ .external_url }}
+      use_grpc: {{ .use_grpc }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,28 @@
+{{- $root := . }}
+{{- with .Values.monitoring }}
+{{- if eq (.enabled | toString) "true" }}
+{{- $mon := . }}
+{{- range .namespaces }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ $mon.serviceMonitor.name }}
+  namespace: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ $mon.syncwave | default "3" | quote }}
+  labels:
+    {{- include "tpl.labels" $root | nindent 4 }}
+spec:
+  targetLabels:
+    - app
+  selector:
+    {{- toYaml $mon.serviceMonitor.selector | nindent 4 }}
+  endpoints:
+    - port: {{ $mon.serviceMonitor.port }}
+      interval: {{ $mon.serviceMonitor.interval }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

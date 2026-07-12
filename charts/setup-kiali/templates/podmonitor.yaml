@@ -1,0 +1,30 @@
+{{- $root := . }}
+{{- with .Values.monitoring }}
+{{- if eq (.enabled | toString) "true" }}
+{{- $mon := . }}
+{{- range .namespaces }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ $mon.podMonitor.name }}
+  namespace: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ $mon.syncwave | default "3" | quote }}
+  labels:
+    {{- include "tpl.labels" $root | nindent 4 }}
+spec:
+  selector:
+    matchExpressions:
+      - key: istio-prometheus-ignore
+        operator: DoesNotExist
+  podMetricsEndpoints:
+    - path: {{ $mon.podMonitor.path }}
+      interval: {{ $mon.podMonitor.interval }}
+      relabelings:
+        {{- toYaml $mon.podMonitor.relabelings | nindent 8 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

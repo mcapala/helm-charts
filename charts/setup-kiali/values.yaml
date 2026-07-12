@@ -1,0 +1,165 @@
+---
+# Subchart: helper-operator
+# Installs the Kiali operator into openshift-operators.
+helper-operator:
+  operators:
+    kiali-operator:
+      # -- Install the operator yes/no.
+      enabled: true
+      # -- Syncwave for the operator installation.
+      syncwave: '0'
+      namespace:
+        # -- Namespace the Subscription is created in. openshift-operators always exists.
+        name: openshift-operators
+        # -- Do not create the namespace, it always exists.
+        create: false
+      subscription:
+        # -- Subscription channel.
+        channel: stable
+        # -- InstallPlan approval strategy (Automatic or Manual).
+        approval: Automatic
+        # -- Package name of the operator.
+        operatorName: kiali-ossm
+        # -- Catalog source.
+        source: redhat-operators
+        # -- Namespace of the catalog source.
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        # -- openshift-operators ships a global OperatorGroup - do not create another one.
+        create: false
+        notownnamespace: true
+
+# Subchart: helper-status-checker
+# Waits until the operator CSV reports Succeeded.
+helper-status-checker:
+  # -- Enable the status checker Job.
+  enabled: true
+
+  checks:
+      # -- String the CSV name is grepped for (CSV: kiali-operator.vX.Y.Z).
+    - operatorName: kiali-operator
+      namespace:
+        # -- Namespace the CSV appears in.
+        name: openshift-operators
+      serviceAccount:
+        # -- ServiceAccount used by the checker Job.
+        name: "status-checker-kiali"
+
+kiali:
+  # -- Deploy the Kiali custom resource yes/no.
+  enabled: true
+  # -- Name of the Kiali resource.
+  name: kiali
+  # -- Namespace of the Kiali resource (control plane namespace).
+  namespace: istio-system
+  # -- Syncwave: after the operator is ready.
+  syncwave: '3'
+  # -- Optional: authentication strategy (openshift, anonymous, token). Empty = operator default (openshift).
+  # @default -- {}
+  auth: {}
+  deployment:
+    # -- Give Kiali access to all namespaces (required with discovery selectors).
+    cluster_wide_access: true
+    # -- Run Kiali in view-only mode (no changes via UI).
+    view_only_mode: false
+    # -- Namespaces Kiali watches (rendered into deployment.discovery_selectors.default, items are ORed).
+    # Should mirror the Istio meshConfig.discoverySelectors.
+    # @default -- see values.yaml
+    discovery_selectors:
+      - matchLabels:
+          istio-discovery: enabled
+      - matchExpressions:
+          - key: kubernetes.io/metadata.name
+            operator: In
+            values:
+              - istio-system
+              - istio-cni
+              - openshift-ingress
+  external_services:
+    istio:
+      # -- Gateway API classes shown by Kiali. Registering istio AND openshift-default avoids KIA1504.
+      # @default -- see values.yaml
+      gateway_api_classes:
+        - name: Istio
+          class_name: istio
+        - name: OpenShift Default
+          class_name: openshift-default
+    prometheus:
+      auth:
+        # -- Authentication type used against Prometheus (bearer for OpenShift platform monitoring).
+        type: bearer
+        # -- Use the Kiali ServiceAccount token as the bearer token.
+        use_kiali_token: true
+      thanos_proxy:
+        # -- The platform thanos-querier speaks the Thanos API - must be enabled.
+        enabled: true
+      # -- URL of the platform Prometheus (thanos-querier).
+      url: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
+    # -- Optional: Grafana integration (enabled, internal_url, external_url).
+    # @default -- {}
+    grafana: {}
+    # -- Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc). Phase 2.
+    # @default -- {}
+    tracing: {}
+  # -- Additional labels for the resource.
+  # @default -- {}
+  additionalLabels: {}
+  # -- Additional annotations for the resource.
+  # @default -- {}
+  additionalAnnotations: {}
+
+monitoring:
+  # -- Create ServiceMonitor/PodMonitor resources so platform Prometheus (UWM) scrapes istiod and Envoy metrics.
+  enabled: true
+  # -- Syncwave for the monitors.
+  syncwave: '3'
+  # -- Namespaces to create the monitors in. openshift-ingress becomes relevant with Gateway API (phase 2).
+  namespaces:
+    - name: istio-system
+      enabled: true
+    - name: openshift-ingress
+      enabled: false
+  serviceMonitor:
+    # -- Name of the istiod ServiceMonitor.
+    name: istiod-monitor
+    # -- Scrape interval.
+    interval: 30s
+    # -- Metrics port name on the istiod service.
+    port: http-monitoring
+    # -- Label selector matching the istiod service.
+    selector:
+      matchLabels:
+        istio: pilot
+  podMonitor:
+    # -- Name of the Envoy proxy PodMonitor.
+    name: envoy-stats-monitor
+    # -- Metrics path exposed by the Envoy sidecar.
+    path: /stats/prometheus
+    # -- Scrape interval.
+    interval: 30s
+    # -- Relabeling rules: keep istio-proxy containers, build __address__ for IPv4/IPv6, map namespace/pod labels.
+    # @default -- see values.yaml
+    relabelings:
+      - action: keep
+        sourceLabels: [__meta_kubernetes_pod_container_name]
+        regex: "istio-proxy"
+      - action: keep
+        sourceLabels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_scrape]
+      - action: replace
+        regex: (\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})
+        replacement: '[$2]:$1'
+        sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+        targetLabel: __address__
+      - action: replace
+        regex: (\d+);((([0-9]+?)(\.|$)){4})
+        replacement: $2:$1
+        sourceLabels: [__meta_kubernetes_pod_annotation_prometheus_io_port, __meta_kubernetes_pod_ip]
+        targetLabel: __address__
+      - action: labeldrop
+        regex: "__meta_kubernetes_pod_label_(.+)"
+      - action: replace
+        sourceLabels: [__meta_kubernetes_namespace]
+        targetLabel: namespace
+      - action: replace
+        sourceLabels: [__meta_kubernetes_pod_name]
+        targetLabel: pod_name

@@ -1,0 +1,52 @@
+{{ template "doc.header" . }}
+
+This Helm chart deploys and configures **Kiali** for OpenShift Service Mesh 3, integrated with OpenShift platform monitoring. It provides a declarative way to manage:
+
+- **Operator installation** - `kiali-ossm` via OLM Subscription (helper-operator) with CSV readiness gating (helper-status-checker)
+- **Kiali** - a Kiali instance wired to the platform Prometheus (`thanos-querier`) with bearer-token auth, mesh namespace discovery selectors and both Gateway API classes (`istio`, `openshift-default`)
+- **ServiceMonitor / PodMonitor** - scrape configs for istiod and Envoy sidecar metrics via User Workload Monitoring, per namespace (list-driven)
+
+Based on the OpenShift monitoring integration described in the
+[openshift-gateway-mesh-integration monitoring blog](https://github.com/openlab-red/openshift-gateway-mesh-integration/blob/main/docs/blogs/monitoring.md).
+
+## Prerequisites
+
+### Required
+
+- **OpenShift** 4.19+
+- **Helm** 3.0+
+- **OpenShift Service Mesh 3** control plane (e.g. via the `setup-istio` chart) — the Kiali resource lives in the control plane namespace
+- **User Workload Monitoring** enabled (`enableUserWorkload: true` in the `cluster-monitoring-config` ConfigMap), so the ServiceMonitor/PodMonitor resources are scraped
+
+{{ template "doc.deps" . }}
+
+It is best used with a full GitOps approach such as Argo CD does. For example, https://github.com/tjungbauer/openshift-clusterconfig-gitops
+
+{{ template "doc.maintainer_and_sources" . }}
+
+## Parameters
+
+Verify the subcharts for additional settings:
+
+* [tpl](https://github.com/tjungbauer/helm-charts/tree/main/charts/tpl)
+* [helper-operator](https://github.com/tjungbauer/helm-charts/tree/main/charts/helper-operator)
+* [helper-status-checker](https://github.com/tjungbauer/helm-charts/tree/main/charts/helper-status-checker)
+
+{{ template "doc.values" . }}
+
+## Monitoring resources
+
+`monitoring.namespaces` drives where the istiod `ServiceMonitor` and Envoy `PodMonitor` are created.
+The `openshift-ingress` entry is pre-defined but disabled — enable it once a Gateway API gateway
+(with its own istiod and Envoy pods) runs there:
+
+```yaml
+monitoring:
+  namespaces:
+    - name: istio-system
+      enabled: true
+    - name: openshift-ingress
+      enabled: true
+```
+
+{{ template "doc.footer" . }}

@@ -1,0 +1,71 @@
+{{ template "doc.header" . }}
+
+This Helm chart deploys and configures **OpenShift Service Mesh 3** (sail-operator based). It provides a declarative way to manage:
+
+- **Operator installation** - `servicemeshoperator3` via OLM Subscription (helper-operator) with CSV readiness gating (helper-status-checker)
+- **Namespaces** - `istio-system`, `istio-cni` and `istio-csr` (list-driven, fully configurable)
+- **IstioCNI** - the Istio CNI node agent
+- **IstioCSR** - the cert-manager istio-csr agent, delegating workload and istiod certificate signing to a cert-manager `Issuer`
+- **Istio** - the control plane, including `meshConfig.discoverySelectors` and `global.caAddress` pointing at istio-csr
+- **PeerAuthentication** - mesh-wide mTLS policy (STRICT by default)
+
+## Prerequisites
+
+### Required
+
+- **OpenShift** 4.19+
+- **Helm** 3.0+
+- **cert-manager Operator for Red Hat OpenShift** 1.15+ (provides the `IstioCSR` CRD) if `istiocsr.enabled` is set
+- A cert-manager `Issuer` (default: `istio-ca` in `istio-system`) holding the mesh intermediate CA
+
+## Mesh membership
+
+Namespaces join the mesh via `meshConfig.discoverySelectors` (items are ORed):
+
+- explicit namespace names (`istio-system`, `istio-cni`, `istio-csr`, `openshift-ingress` by default)
+- any namespace labeled `istio-discovery: enabled`
+
+{{ template "doc.deps" . }}
+
+It is best used with a full GitOps approach such as Argo CD does. For example, https://github.com/tjungbauer/openshift-clusterconfig-gitops
+
+{{ template "doc.maintainer_and_sources" . }}
+
+## Parameters
+
+Verify the subcharts for additional settings:
+
+* [tpl](https://github.com/tjungbauer/helm-charts/tree/main/charts/tpl)
+* [helper-operator](https://github.com/tjungbauer/helm-charts/tree/main/charts/helper-operator)
+* [helper-status-checker](https://github.com/tjungbauer/helm-charts/tree/main/charts/helper-status-checker)
+
+{{ template "doc.values" . }}
+
+## Example: cert-manager integration (istio-csr)
+
+With `istiocsr.enabled: true` the chart deploys the `IstioCSR` custom resource and points the control plane at the agent:
+
+```yaml
+istiocsr:
+  enabled: true
+  namespace: istio-csr
+  istioCSRConfig:
+    certManager:
+      issuerRef:
+        name: istio-ca
+        kind: Issuer
+        group: cert-manager.io
+    istiodTLSConfig:
+      trustDomain: cluster.local
+    istio:
+      namespace: istio-system
+
+istio:
+  values:
+    global:
+      caAddress: cert-manager-istio-csr.istio-csr.svc:443
+```
+
+The referenced `Issuer` (and its CA `Certificate`) must be created separately, e.g. by the cert-manager chart.
+
+{{ template "doc.footer" . }}

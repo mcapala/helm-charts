@@ -1,0 +1,39 @@
+{{- with .Values.istio }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: sailoperator.io/v1
+kind: Istio
+metadata:
+  name: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "4" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    {{- if .additionalAnnotations }}
+    {{- include "tpl.additionalAnnotations" .additionalAnnotations | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+    {{- if .additionalLabels }}
+    {{- include "tpl.additionalLabels" .additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  namespace: {{ .namespace }}
+  {{- if .version }}
+  version: {{ .version }}
+  {{- end }}
+  {{- if .updateStrategy }}
+  updateStrategy:
+    {{- toYaml .updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- $vals := deepCopy (.values | default dict) }}
+  {{- if .discoverySelectors }}
+  {{- $mesh := $vals.meshConfig | default dict }}
+  {{- $_ := set $mesh "discoverySelectors" .discoverySelectors }}
+  {{- $_ := set $vals "meshConfig" $mesh }}
+  {{- end }}
+  {{- if $vals }}
+  values:
+    {{- toYaml $vals | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

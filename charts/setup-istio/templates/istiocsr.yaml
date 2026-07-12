@@ -1,0 +1,24 @@
+{{- with .Values.istiocsr }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: operator.openshift.io/v1alpha1
+kind: IstioCSR
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "3" | quote }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    {{- if .additionalAnnotations }}
+    {{- include "tpl.additionalAnnotations" .additionalAnnotations | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+    {{- if .additionalLabels }}
+    {{- include "tpl.additionalLabels" .additionalLabels | nindent 4 }}
+    {{- end }}
+spec:
+  istioCSRConfig:
+    {{- toYaml .istioCSRConfig | nindent 4 }}
+{{- end }}
+{{- end }}

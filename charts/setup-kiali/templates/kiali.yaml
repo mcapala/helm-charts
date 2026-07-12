@@ -97,7 +97,7 @@ spec:
       {{- with .auth }}
       auth:
         type: {{ .type }}
-        {{- if .use_kiali_token }}
+        {{- if hasKey . "use_kiali_token" }}
         use_kiali_token: {{ .use_kiali_token }}
         {{- end }}
       {{- end }}
@@ -116,7 +116,7 @@ spec:
       {{- with .auth }}
       auth:
         type: {{ .type }}
-        {{- if .use_kiali_token }}
+        {{- if hasKey . "use_kiali_token" }}
         use_kiali_token: {{ .use_kiali_token }}
         {{- end }}
       {{- end }}

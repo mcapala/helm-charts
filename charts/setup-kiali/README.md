@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.6](https://img.shields.io/badge/Version-1.0.6-informational?style=flat-square)
+  ![Version: 1.0.7](https://img.shields.io/badge/Version-1.0.7-informational?style=flat-square)
 
  
 
@@ -93,7 +93,7 @@ Verify the subcharts for additional settings:
 | kiali.enabled | bool | `true` | Deploy the Kiali custom resource yes/no. |
 | kiali.external_services.grafana.enabled | bool | `false` | Grafana integration. Explicitly disabled by default - Kiali's internal default is enabled=true, which probes grafana.istio-system:3000 and logs connection warnings. |
 | kiali.external_services.istio.gateway_api_classes | list | see values.yaml | Gateway API classes shown by Kiali. Registering istio AND openshift-default avoids KIA1504. |
-| kiali.external_services.perses | object | {} | Optional: Perses dashboard integration (enabled, internal_url, external_url, url_format, project, dashboards[].name, dashboards[].variables.namespace/service/workload/datasource), e.g. deployed via the Cluster Observability Operator. With the Cluster Observability Operator set url_format "openshift", leave internal_url unset and point external_url at the cluster console URL without any additional path. The dashboards list makes Kiali link its metrics pages to the matching Perses dashboards (they must exist in Perses). |
+| kiali.external_services.perses | object | {} | Optional: Perses dashboard integration (enabled, internal_url, external_url, url_format, project, dashboards[].name, dashboards[].variables.namespace/service/workload/version/datasource), e.g. deployed via the Cluster Observability Operator. With the Cluster Observability Operator set url_format "openshift", leave internal_url unset and point external_url at the cluster console URL without any additional path. The dashboards list makes Kiali link its metrics pages to the matching Perses dashboards (they must exist in Perses). |
 | kiali.external_services.prometheus.auth.type | string | `"bearer"` | Authentication type used against Prometheus (bearer for OpenShift platform monitoring). |
 | kiali.external_services.prometheus.auth.use_kiali_token | bool | `true` | Use the Kiali ServiceAccount token as the bearer token. |
 | kiali.external_services.prometheus.thanos_proxy.enabled | bool | `true` | The platform thanos-querier speaks the Thanos API - must be enabled. |

@@ -103,7 +103,9 @@ kiali:
     # e.g. deployed via the Cluster Observability Operator.
     # @default -- {}
     perses: {}
-    # -- Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc).
+    # -- Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url,
+    # external_url, use_grpc, auth.type, auth.use_kiali_token). With TempoStack multitenancy use
+    # the gateway tenant URL and bearer auth with the Kiali ServiceAccount token.
     # @default -- {}
     tracing: {}
   # -- Additional labels for the resource.

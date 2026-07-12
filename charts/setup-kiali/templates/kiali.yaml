@@ -71,8 +71,17 @@ spec:
       enabled: true
       provider: {{ .provider }}
       internal_url: {{ .internal_url }}
+      {{- if .external_url }}
       external_url: {{ .external_url }}
+      {{- end }}
       use_grpc: {{ .use_grpc }}
+      {{- with .auth }}
+      auth:
+        type: {{ .type }}
+        {{- if .use_kiali_token }}
+        use_kiali_token: {{ .use_kiali_token }}
+        {{- end }}
+      {{- end }}
     {{- end }}
     {{- end }}
 {{- end }}

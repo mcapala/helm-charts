@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
+  ![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square)
 
  
 
@@ -98,7 +98,7 @@ Verify the subcharts for additional settings:
 | kiali.external_services.prometheus.auth.use_kiali_token | bool | `true` | Use the Kiali ServiceAccount token as the bearer token. |
 | kiali.external_services.prometheus.thanos_proxy.enabled | bool | `true` | The platform thanos-querier speaks the Thanos API - must be enabled. |
 | kiali.external_services.prometheus.url | string | `"https://thanos-querier.openshift-monitoring.svc.cluster.local:9091"` | URL of the platform Prometheus (thanos-querier). |
-| kiali.external_services.tracing | object | {} | Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc). |
+| kiali.external_services.tracing | object | {} | Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc, auth.type, auth.use_kiali_token). With TempoStack multitenancy use the gateway tenant URL and bearer auth with the Kiali ServiceAccount token. |
 | kiali.name | string | `"kiali"` | Name of the Kiali resource. |
 | kiali.namespace | string | `"istio-system"` | Namespace of the Kiali resource (control plane namespace). |
 | kiali.syncwave | string | `"3"` | Syncwave: after the operator is ready. |

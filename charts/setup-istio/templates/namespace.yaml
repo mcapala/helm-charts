@@ -1,0 +1,22 @@
+{{- range .Values.namespaces }}
+{{- if eq (.enabled | toString) "true" }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ .syncwave | default "0" | quote }}
+    {{- if .descr }}
+    openshift.io/description: {{ .descr | quote }}
+    {{- end }}
+    {{- if .additionalAnnotations }}
+    {{- include "tpl.additionalAnnotations" .additionalAnnotations | nindent 4 }}
+    {{- end }}
+  labels:
+    {{- include "tpl.labels" $ | nindent 4 }}
+    {{- if .additionalLabels }}
+    {{- include "tpl.additionalLabels" .additionalLabels | nindent 4 }}
+    {{- end }}
+{{- end }}
+{{- end }}

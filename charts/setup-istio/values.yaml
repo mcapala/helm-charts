@@ -1,0 +1,189 @@
+---
+# -- List of namespaces this chart shall create. Used for istio-system, istio-cni and istio-csr.
+# @default -- see values.yaml
+namespaces:
+    # -- Name of the namespace.
+  - name: istio-system
+    # -- Create this namespace yes/no.
+    enabled: true
+    # -- Syncwave for the namespace creation.
+    # @default -- 0
+    syncwave: '0'
+    # -- Optional: OpenShift description of the namespace.
+    descr: 'OpenShift Service Mesh control plane'
+    # -- Additional labels to add to the namespace as key: value pairs.
+    # @default -- {}
+    additionalLabels: {}
+    # -- Additional annotations to add to the namespace as key: value pairs.
+    # @default -- {}
+    additionalAnnotations: {}
+  - name: istio-cni
+    enabled: true
+    syncwave: '0'
+    descr: 'OpenShift Service Mesh CNI plugin'
+    additionalLabels: {}
+    additionalAnnotations: {}
+  - name: istio-csr
+    enabled: true
+    syncwave: '0'
+    descr: 'cert-manager istio-csr agent'
+    additionalLabels: {}
+    additionalAnnotations: {}
+
+# Subchart: helper-operator
+# Installs the OpenShift Service Mesh 3 operator into openshift-operators.
+helper-operator:
+  operators:
+    servicemesh-operator3:
+      # -- Install the operator yes/no.
+      enabled: true
+      # -- Syncwave for the operator installation.
+      syncwave: '0'
+      namespace:
+        # -- Namespace the Subscription is created in. openshift-operators already exists.
+        name: openshift-operators
+        # -- Do not create the namespace, it always exists.
+        create: false
+      subscription:
+        # -- Subscription channel.
+        channel: stable
+        # -- InstallPlan approval strategy (Automatic or Manual).
+        approval: Automatic
+        # -- Package name of the operator.
+        operatorName: servicemeshoperator3
+        # -- Catalog source.
+        source: redhat-operators
+        # -- Namespace of the catalog source.
+        sourceNamespace: openshift-marketplace
+      operatorgroup:
+        # -- openshift-operators ships a global OperatorGroup - do not create another one.
+        create: false
+        notownnamespace: true
+
+# Subchart: helper-status-checker
+# Waits until the operator CSV reports Succeeded before later syncwaves continue.
+helper-status-checker:
+  # -- Enable the status checker Job.
+  enabled: true
+
+  checks:
+      # -- String the CSV name is grepped for (CSV: servicemeshoperator3.vX.Y.Z).
+    - operatorName: servicemeshoperator3
+      namespace:
+        # -- Namespace the CSV appears in.
+        name: openshift-operators
+      serviceAccount:
+        # -- ServiceAccount used by the checker Job.
+        name: "status-checker-servicemesh"
+
+istiocni:
+  # -- Deploy the IstioCNI custom resource yes/no.
+  enabled: true
+  # -- Name of the IstioCNI resource.
+  name: default
+  # -- Syncwave: after the operator is ready.
+  syncwave: '3'
+  # -- Namespace the CNI DaemonSet runs in.
+  namespace: istio-cni
+  # -- Optional: pin the Istio CNI version (e.g. v1.26.4). Empty string uses the operator default.
+  # @default -- ""
+  version: ''
+  # -- Optional: free-form .spec.values passed to the IstioCNI resource (sail-operator helm values).
+  # @default -- {}
+  values: {}
+  # -- Additional labels for the resource.
+  # @default -- {}
+  additionalLabels: {}
+  # -- Additional annotations for the resource.
+  # @default -- {}
+  additionalAnnotations: {}
+
+istiocsr:
+  # -- Deploy the IstioCSR custom resource (cert-manager operator must be installed). Delegates workload/istiod certificate signing to cert-manager.
+  enabled: true
+  # -- Name of the IstioCSR resource.
+  name: default
+  # -- Syncwave: parallel to IstioCNI, before the Istio control plane.
+  syncwave: '3'
+  # -- Namespace the istio-csr agent runs in.
+  namespace: istio-csr
+  # -- istioCSRConfig rendered 1:1 into .spec.istioCSRConfig.
+  # The issuerRef must point to a cert-manager Issuer holding the mesh intermediate CA.
+  # @default -- see values.yaml
+  istioCSRConfig:
+    certManager:
+      issuerRef:
+        name: istio-ca
+        kind: Issuer
+        group: cert-manager.io
+    istiodTLSConfig:
+      trustDomain: cluster.local
+    istio:
+      namespace: istio-system
+  # -- Additional labels for the resource.
+  # @default -- {}
+  additionalLabels: {}
+  # -- Additional annotations for the resource.
+  # @default -- {}
+  additionalAnnotations: {}
+
+istio:
+  # -- Deploy the Istio (control plane) custom resource yes/no.
+  enabled: true
+  # -- Name of the Istio resource.
+  name: default
+  # -- Syncwave: after IstioCNI and IstioCSR.
+  syncwave: '4'
+  # -- Namespace istiod is deployed to.
+  namespace: istio-system
+  # -- Optional: pin the control plane version (e.g. v1.26.4). Empty string uses the operator default.
+  # @default -- ""
+  version: ''
+  # -- Update strategy for the control plane (InPlace or RevisionBased).
+  updateStrategy:
+    type: InPlace
+  # -- meshConfig.discoverySelectors: namespaces that are part of the mesh. Items are ORed.
+  # Add application namespaces by labeling them istio-discovery=enabled.
+  # @default -- see values.yaml
+  discoverySelectors:
+    - matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - istio-system
+            - istio-cni
+            - istio-csr
+            - openshift-ingress
+    - matchLabels:
+        istio-discovery: enabled
+  # -- Free-form .spec.values (sail-operator helm values). discoverySelectors above are merged into values.meshConfig.
+  # global.caAddress points istiod and workloads to the istio-csr agent (disable together with istiocsr.enabled).
+  # @default -- see values.yaml
+  values:
+    global:
+      caAddress: cert-manager-istio-csr.istio-csr.svc:443
+  # -- Additional labels for the resource.
+  # @default -- {}
+  additionalLabels: {}
+  # -- Additional annotations for the resource.
+  # @default -- {}
+  additionalAnnotations: {}
+
+peerauthentication:
+  # -- Create a mesh-wide PeerAuthentication in the control plane namespace.
+  enabled: true
+  # -- Name of the PeerAuthentication resource.
+  name: default
+  # -- Syncwave: after the control plane.
+  syncwave: '5'
+  # -- Namespace: control plane namespace makes the policy mesh-wide.
+  namespace: istio-system
+  mtls:
+    # -- mTLS mode for the whole mesh (STRICT, PERMISSIVE or DISABLE).
+    mode: STRICT
+  # -- Additional labels for the resource.
+  # @default -- {}
+  additionalLabels: {}
+  # -- Additional annotations for the resource.
+  # @default -- {}
+  additionalAnnotations: {}

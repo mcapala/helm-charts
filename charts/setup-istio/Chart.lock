@@ -1,0 +1,12 @@
+dependencies:
+- name: tpl
+  repository: https://charts.stderr.at/
+  version: 1.0.31
+- name: helper-operator
+  repository: https://charts.stderr.at/
+  version: 1.0.45
+- name: helper-status-checker
+  repository: https://charts.stderr.at/
+  version: 4.0.21
+digest: sha256:2195116051d6f4331406812af400ce11e29e9bce55a43e08ec3f2bd48c5ecd85
+generated: "2026-07-12T18:05:05.140012849+02:00"

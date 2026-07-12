@@ -1,0 +1,25 @@
+apiVersion: v2
+name: setup-istio
+description: Installs OpenShift Service Mesh 3 (servicemeshoperator3), creates istio-system/istio-cni/istio-csr namespaces, and configures IstioCNI, IstioCSR (cert-manager istio-csr agent) and the Istio control plane with mesh-wide mTLS.
+type: application
+version: 1.0.0
+home: https://github.com/mcapala/helm-charts/tree/main/charts/setup-istio
+maintainers:
+  - name: mcapala
+dependencies:
+  - name: tpl
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-operator
+    version: ~1.0.0
+    repository: https://charts.stderr.at/
+  - name: helper-status-checker
+    version: ~4.0.0
+    repository: https://charts.stderr.at/
+    condition: helper-status-checker.enabled
+sources:
+  - https://github.com/mcapala/helm-charts
+keywords:
+  - servicemesh
+  - istio
+  - ossm

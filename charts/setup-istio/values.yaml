@@ -187,3 +187,31 @@ peerauthentication:
   # -- Additional annotations for the resource.
   # @default -- {}
   additionalAnnotations: {}
+
+telemetry:
+  # -- Create a mesh-wide Telemetry resource enabling trace export.
+  # Requires a matching extensionProvider in the Istio meshConfig (istio.values.meshConfig.extensionProviders).
+  enabled: false
+  # -- Name of the Telemetry resource.
+  name: default
+  # -- Namespace: control plane namespace makes the configuration mesh-wide.
+  namespace: istio-system
+  # -- Syncwave: after the control plane.
+  syncwave: '5'
+  # -- Tracing configuration list (.spec.tracing). Each item defines its own providers,
+  # randomSamplingPercentage and optional disableSpanReporting, so sampling can differ per provider.
+  # Provider names must match extensionProvider names in the Istio meshConfig.
+  # @default -- see values.yaml
+  tracing:
+      # -- Tracing providers this entry applies to.
+    - providers:
+          # -- Name of the extensionProvider defined in meshConfig.
+        - name: otel
+      # -- Percentage of requests to sample for these providers.
+      randomSamplingPercentage: 100
+  # -- Additional labels for the resource.
+  # @default -- {}
+  additionalLabels: {}
+  # -- Additional annotations for the resource.
+  # @default -- {}
+  additionalAnnotations: {}

@@ -2,7 +2,7 @@ apiVersion: v2
 name: setup-istio
 description: Installs OpenShift Service Mesh 3 (servicemeshoperator3), creates istio-system/istio-cni/istio-csr namespaces, and configures IstioCNI, IstioCSR (cert-manager istio-csr agent) and the Istio control plane with mesh-wide mTLS.
 type: application
-version: 1.0.0
+version: 1.0.1
 home: https://github.com/mcapala/helm-charts/tree/main/charts/setup-istio
 maintainers:
   - name: mcapala

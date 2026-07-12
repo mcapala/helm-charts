@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square)
+  ![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
 
  
 
@@ -130,6 +130,16 @@ Verify the subcharts for additional settings:
 | peerauthentication.name | string | `"default"` | Name of the PeerAuthentication resource. |
 | peerauthentication.namespace | string | `"istio-system"` | Namespace: control plane namespace makes the policy mesh-wide. |
 | peerauthentication.syncwave | string | `"5"` | Syncwave: after the control plane. |
+| telemetry.additionalAnnotations | object | {} | Additional annotations for the resource. |
+| telemetry.additionalLabels | object | {} | Additional labels for the resource. |
+| telemetry.enabled | bool | `false` | Create a mesh-wide Telemetry resource enabling trace export. Requires a matching extensionProvider in the Istio meshConfig (istio.values.meshConfig.extensionProviders). |
+| telemetry.name | string | `"default"` | Name of the Telemetry resource. |
+| telemetry.namespace | string | `"istio-system"` | Namespace: control plane namespace makes the configuration mesh-wide. |
+| telemetry.syncwave | string | `"5"` | Syncwave: after the control plane. |
+| telemetry.tracing | list | see values.yaml | Tracing configuration list (.spec.tracing). Each item defines its own providers, randomSamplingPercentage and optional disableSpanReporting, so sampling can differ per provider. Provider names must match extensionProvider names in the Istio meshConfig. |
+| telemetry.tracing[0] | object | `{"providers":[{"name":"otel"}],"randomSamplingPercentage":100}` | Tracing providers this entry applies to. |
+| telemetry.tracing[0].providers[0] | object | `{"name":"otel"}` | Name of the extensionProvider defined in meshConfig. |
+| telemetry.tracing[0].randomSamplingPercentage | int | `100` | Percentage of requests to sample for these providers. |
 
 ## Example: cert-manager integration (istio-csr)
 

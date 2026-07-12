@@ -202,6 +202,9 @@ certificates:
       # At least one of commonName (possibly through literalSubject), dnsNames, uris, emailAddresses,
       # ipAddresses or otherNames is required.
 
+      # -- Optional: X.509 common name of the certificate (max 64 characters).
+      # commonName: my-ca
+
       # -- Requested set of X509 certificate subject attributes.
       # More info: https://datatracker.ietf.org/doc/html/rfc5280#section-4.1.2.6
       # Might be replaced in the future by literalSubject

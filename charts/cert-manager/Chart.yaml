@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cert-manager
 description: Install and configure the Cert-Manager
-version: 2.0.4
+version: 2.0.5
 home: https://github.com/tjungbauer/helm-charts/tree/main/charts/cert-manager
 icon: https://github.com/tjungbauer/helm-charts/raw/gh-pages/images/cert-manager-icon.png
 maintainers:
@@ -37,3 +37,5 @@ annotations:
       description: v2.0.3 added support to set the namespace when the type is Issuer. Ignored for ClusterIssuer.
     - kind: changed
       description: (2.0.4) - Add Chart.lock for reproducible installs, refresh resolved dependencies, maintainer email
+    - kind: added
+      description: (2.0.5) - support optional commonName in Certificate template

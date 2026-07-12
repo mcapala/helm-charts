@@ -2,7 +2,7 @@ apiVersion: v2
 name: setup-kiali
 description: Installs the Kiali operator (kiali-ossm) and a Kiali instance integrated with OpenShift platform monitoring (thanos-querier), including ServiceMonitor/PodMonitor resources for istiod and Envoy proxies.
 type: application
-version: 1.0.3
+version: 1.0.4
 home: https://github.com/mcapala/helm-charts/tree/main/charts/setup-kiali
 maintainers:
   - name: mcapala

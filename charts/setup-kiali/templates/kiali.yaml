@@ -67,6 +67,27 @@ spec:
       {{- if .url_format }}
       url_format: {{ .url_format | quote }}
       {{- end }}
+      {{- with .dashboards }}
+      dashboards:
+        {{- range . }}
+        - name: {{ .name | quote }}
+          {{- with .variables }}
+          variables:
+            {{- if .namespace }}
+            namespace: {{ .namespace | quote }}
+            {{- end }}
+            {{- if .service }}
+            service: {{ .service | quote }}
+            {{- end }}
+            {{- if .workload }}
+            workload: {{ .workload | quote }}
+            {{- end }}
+            {{- if .datasource }}
+            datasource: {{ .datasource | quote }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
       {{- if .project }}
       project: {{ .project }}
       {{- end }}

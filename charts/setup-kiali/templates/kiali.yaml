@@ -54,6 +54,17 @@ spec:
       {{- if $grafana.external_url }}
       external_url: {{ $grafana.external_url }}
       {{- end }}
+    {{- with .external_services.perses }}
+    {{- if eq (.enabled | toString) "true" }}
+    perses:
+      enabled: true
+      internal_url: {{ .internal_url }}
+      external_url: {{ .external_url }}
+      {{- if .project }}
+      project: {{ .project }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
     {{- with .external_services.tracing }}
     {{- if eq (.enabled | toString) "true" }}
     tracing:

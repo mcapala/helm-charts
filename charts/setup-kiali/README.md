@@ -93,16 +93,17 @@ Verify the subcharts for additional settings:
 | kiali.enabled | bool | `true` | Deploy the Kiali custom resource yes/no. |
 | kiali.external_services.grafana.enabled | bool | `false` | Grafana integration. Explicitly disabled by default - Kiali's internal default is enabled=true, which probes grafana.istio-system:3000 and logs connection warnings. |
 | kiali.external_services.istio.gateway_api_classes | list | see values.yaml | Gateway API classes shown by Kiali. Registering istio AND openshift-default avoids KIA1504. |
+| kiali.external_services.perses | object | {} | Optional: Perses dashboard integration (enabled, internal_url, external_url, project), e.g. deployed via the Cluster Observability Operator. |
 | kiali.external_services.prometheus.auth.type | string | `"bearer"` | Authentication type used against Prometheus (bearer for OpenShift platform monitoring). |
 | kiali.external_services.prometheus.auth.use_kiali_token | bool | `true` | Use the Kiali ServiceAccount token as the bearer token. |
 | kiali.external_services.prometheus.thanos_proxy.enabled | bool | `true` | The platform thanos-querier speaks the Thanos API - must be enabled. |
 | kiali.external_services.prometheus.url | string | `"https://thanos-querier.openshift-monitoring.svc.cluster.local:9091"` | URL of the platform Prometheus (thanos-querier). |
-| kiali.external_services.tracing | object | {} | Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc). Phase 2. |
+| kiali.external_services.tracing | object | {} | Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc). |
 | kiali.name | string | `"kiali"` | Name of the Kiali resource. |
 | kiali.namespace | string | `"istio-system"` | Namespace of the Kiali resource (control plane namespace). |
 | kiali.syncwave | string | `"3"` | Syncwave: after the operator is ready. |
 | monitoring.enabled | bool | `true` | Create ServiceMonitor/PodMonitor resources so platform Prometheus (UWM) scrapes istiod and Envoy metrics. |
-| monitoring.namespaces | list | `[{"enabled":true,"name":"istio-system"},{"enabled":false,"name":"openshift-ingress"}]` | Namespaces to create the monitors in. openshift-ingress becomes relevant with Gateway API (phase 2). |
+| monitoring.namespaces | list | `[{"enabled":true,"name":"istio-system"},{"enabled":false,"name":"openshift-ingress"}]` | Namespaces to create the monitors in. openshift-ingress becomes relevant when a Gateway API gateway runs there. |
 | monitoring.podMonitor.interval | string | `"30s"` | Scrape interval. |
 | monitoring.podMonitor.name | string | `"envoy-stats-monitor"` | Name of the Envoy proxy PodMonitor. |
 | monitoring.podMonitor.path | string | `"/stats/prometheus"` | Metrics path exposed by the Envoy sidecar. |

@@ -99,7 +99,11 @@ kiali:
       # -- Grafana integration. Explicitly disabled by default - Kiali's internal default
       # is enabled=true, which probes grafana.istio-system:3000 and logs connection warnings.
       enabled: false
-    # -- Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc). Phase 2.
+    # -- Optional: Perses dashboard integration (enabled, internal_url, external_url, project),
+    # e.g. deployed via the Cluster Observability Operator.
+    # @default -- {}
+    perses: {}
+    # -- Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc).
     # @default -- {}
     tracing: {}
   # -- Additional labels for the resource.
@@ -114,7 +118,7 @@ monitoring:
   enabled: true
   # -- Syncwave for the monitors.
   syncwave: '3'
-  # -- Namespaces to create the monitors in. openshift-ingress becomes relevant with Gateway API (phase 2).
+  # -- Namespaces to create the monitors in. openshift-ingress becomes relevant when a Gateway API gateway runs there.
   namespaces:
     - name: istio-system
       enabled: true

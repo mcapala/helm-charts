@@ -95,9 +95,10 @@ kiali:
         enabled: true
       # -- URL of the platform Prometheus (thanos-querier).
       url: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
-    # -- Optional: Grafana integration (enabled, internal_url, external_url).
-    # @default -- {}
-    grafana: {}
+    grafana:
+      # -- Grafana integration. Explicitly disabled by default - Kiali's internal default
+      # is enabled=true, which probes grafana.istio-system:3000 and logs connection warnings.
+      enabled: false
     # -- Optional: distributed tracing integration, e.g. Tempo (enabled, provider, internal_url, external_url, use_grpc). Phase 2.
     # @default -- {}
     tracing: {}

@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square)
+  ![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
 
  
 
@@ -91,7 +91,7 @@ Verify the subcharts for additional settings:
 | kiali.deployment.discovery_selectors | list | see values.yaml | Namespaces Kiali watches (rendered into deployment.discovery_selectors.default, items are ORed). Should mirror the Istio meshConfig.discoverySelectors. |
 | kiali.deployment.view_only_mode | bool | `false` | Run Kiali in view-only mode (no changes via UI). |
 | kiali.enabled | bool | `true` | Deploy the Kiali custom resource yes/no. |
-| kiali.external_services.grafana | object | {} | Optional: Grafana integration (enabled, internal_url, external_url). |
+| kiali.external_services.grafana.enabled | bool | `false` | Grafana integration. Explicitly disabled by default - Kiali's internal default is enabled=true, which probes grafana.istio-system:3000 and logs connection warnings. |
 | kiali.external_services.istio.gateway_api_classes | list | see values.yaml | Gateway API classes shown by Kiali. Registering istio AND openshift-default avoids KIA1504. |
 | kiali.external_services.prometheus.auth.type | string | `"bearer"` | Authentication type used against Prometheus (bearer for OpenShift platform monitoring). |
 | kiali.external_services.prometheus.auth.use_kiali_token | bool | `true` | Use the Kiali ServiceAccount token as the bearer token. |

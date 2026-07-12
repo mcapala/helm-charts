@@ -45,14 +45,15 @@ spec:
       thanos_proxy:
         enabled: {{ .external_services.prometheus.thanos_proxy.enabled }}
       url: {{ .external_services.prometheus.url }}
-    {{- with .external_services.grafana }}
-    {{- if eq (.enabled | toString) "true" }}
+    {{- $grafana := .external_services.grafana | default dict }}
     grafana:
-      enabled: true
-      internal_url: {{ .internal_url }}
-      external_url: {{ .external_url }}
-    {{- end }}
-    {{- end }}
+      enabled: {{ $grafana.enabled | default false }}
+      {{- if $grafana.internal_url }}
+      internal_url: {{ $grafana.internal_url }}
+      {{- end }}
+      {{- if $grafana.external_url }}
+      external_url: {{ $grafana.external_url }}
+      {{- end }}
     {{- with .external_services.tracing }}
     {{- if eq (.enabled | toString) "true" }}
     tracing:

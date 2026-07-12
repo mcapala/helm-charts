@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.4](https://img.shields.io/badge/Version-1.0.4-informational?style=flat-square)
+  ![Version: 1.0.5](https://img.shields.io/badge/Version-1.0.5-informational?style=flat-square)
 
  
 
@@ -102,6 +102,9 @@ Verify the subcharts for additional settings:
 | kiali.name | string | `"kiali"` | Name of the Kiali resource. |
 | kiali.namespace | string | `"istio-system"` | Namespace of the Kiali resource (control plane namespace). |
 | kiali.syncwave | string | `"3"` | Syncwave: after the operator is ready. |
+| monitoring.clusterMonitoringView.enabled | bool | `true` | Create a ClusterRoleBinding granting cluster-monitoring-view to the Kiali ServiceAccount. |
+| monitoring.clusterMonitoringView.name | string | `"kiali-monitoring-view"` | Name of the ClusterRoleBinding. |
+| monitoring.clusterMonitoringView.serviceAccount | string | `"kiali-service-account"` | ServiceAccount the Kiali operator creates for the Kiali instance. |
 | monitoring.enabled | bool | `true` | Create ServiceMonitor/PodMonitor resources so platform Prometheus (UWM) scrapes istiod and Envoy metrics. |
 | monitoring.namespaces | list | `[{"enabled":true,"name":"istio-system"},{"enabled":false,"name":"openshift-ingress"}]` | Namespaces to create the monitors in. openshift-ingress becomes relevant when a Gateway API gateway runs there. |
 | monitoring.podMonitor.interval | string | `"30s"` | Scrape interval. |

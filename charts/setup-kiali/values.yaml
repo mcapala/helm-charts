@@ -130,6 +130,15 @@ monitoring:
       enabled: true
     - name: openshift-ingress
       enabled: false
+  # Grant the Kiali ServiceAccount read access to platform monitoring (thanos-querier).
+  # Required for Kiali to query metrics; the Kiali operator does not create this binding.
+  clusterMonitoringView:
+    # -- Create a ClusterRoleBinding granting cluster-monitoring-view to the Kiali ServiceAccount.
+    enabled: true
+    # -- Name of the ClusterRoleBinding.
+    name: kiali-monitoring-view
+    # -- ServiceAccount the Kiali operator creates for the Kiali instance.
+    serviceAccount: kiali-service-account
   serviceMonitor:
     # -- Name of the istiod ServiceMonitor.
     name: istiod-monitor

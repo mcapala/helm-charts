@@ -94,6 +94,13 @@ spec:
       {{- if .project }}
       project: {{ .project }}
       {{- end }}
+      {{- with .auth }}
+      auth:
+        type: {{ .type }}
+        {{- if .use_kiali_token }}
+        use_kiali_token: {{ .use_kiali_token }}
+        {{- end }}
+      {{- end }}
     {{- end }}
     {{- end }}
     {{- with .external_services.tracing }}

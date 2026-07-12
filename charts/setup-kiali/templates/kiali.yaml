@@ -58,8 +58,15 @@ spec:
     {{- if eq (.enabled | toString) "true" }}
     perses:
       enabled: true
+      {{- if .internal_url }}
       internal_url: {{ .internal_url }}
+      {{- end }}
+      {{- if .external_url }}
       external_url: {{ .external_url }}
+      {{- end }}
+      {{- if .url_format }}
+      url_format: {{ .url_format | quote }}
+      {{- end }}
       {{- if .project }}
       project: {{ .project }}
       {{- end }}

@@ -7,7 +7,7 @@
   [![Lint and Test Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/lint_and_test_charts.yml)
   [![Release Charts](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml/badge.svg)](https://github.com/tjungbauer/helm-charts/actions/workflows/release.yml)
 
-  ![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
+  ![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square)
 
  
 
@@ -99,7 +99,7 @@ Verify the subcharts for additional settings:
 | istio.namespace | string | `"istio-system"` | Namespace istiod is deployed to. |
 | istio.syncwave | string | `"4"` | Syncwave: after IstioCNI and IstioCSR. |
 | istio.updateStrategy | object | `{"type":"InPlace"}` | Update strategy for the control plane (InPlace or RevisionBased). |
-| istio.values | object | see values.yaml | Free-form .spec.values (sail-operator helm values). discoverySelectors above are merged into values.meshConfig. global.caAddress points istiod and workloads to the istio-csr agent (disable together with istiocsr.enabled). |
+| istio.values | object | see values.yaml | Free-form .spec.values (sail-operator helm values). discoverySelectors above are merged into values.meshConfig. global.caAddress points istiod and workloads to the istio-csr agent (disable together with istiocsr.enabled). ENABLE_CA_SERVER=false turns off the built-in istiod CA so the mesh root of trust is the cert-manager CA distributed via istio-csr; without it istiod hands out its self-signed root and workload sidecars cannot validate the istio-csr endpoint. |
 | istio.version | string | "" | Optional: pin the control plane version (e.g. v1.26.4). Empty string uses the operator default. |
 | istiocni.additionalAnnotations | object | {} | Additional annotations for the resource. |
 | istiocni.additionalLabels | object | {} | Additional labels for the resource. |

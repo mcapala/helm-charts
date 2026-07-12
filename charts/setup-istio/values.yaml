@@ -158,10 +158,16 @@ istio:
         istio-discovery: enabled
   # -- Free-form .spec.values (sail-operator helm values). discoverySelectors above are merged into values.meshConfig.
   # global.caAddress points istiod and workloads to the istio-csr agent (disable together with istiocsr.enabled).
+  # ENABLE_CA_SERVER=false turns off the built-in istiod CA so the mesh root of trust is the
+  # cert-manager CA distributed via istio-csr; without it istiod hands out its self-signed root
+  # and workload sidecars cannot validate the istio-csr endpoint.
   # @default -- see values.yaml
   values:
     global:
       caAddress: cert-manager-istio-csr.istio-csr.svc:443
+    pilot:
+      env:
+        ENABLE_CA_SERVER: 'false'
   # -- Additional labels for the resource.
   # @default -- {}
   additionalLabels: {}
